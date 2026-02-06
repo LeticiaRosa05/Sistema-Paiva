@@ -13,6 +13,9 @@ public class UsuarioService {
     }
 
     public Usuario salvarUsuario(Usuario usuario) {
+        if (usuario == null) {
+            throw new IllegalArgumentException("O usuário não pode ser nulo!");
+        }
         return repository.save(usuario);
     }
 }
