@@ -14,7 +14,7 @@ public class UsuarioService {
 
     public Usuario salvarUsuario(Usuario usuario) {
         if (usuario == null) {
-            throw new IllegalArgumentException("O usuário não pode ser nulo!");
+            throw new IllegalArgumentException("O usuário não pode ser nulo!"); // o throw interrompe a execução do método, não sendo necessário um else para evitar que o save seja executado caso o usuário não exista
         }
         return repository.save(usuario);
     }
