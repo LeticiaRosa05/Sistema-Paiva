@@ -1,4 +1,4 @@
-package com.paiva.sistema_paiva;
+package com.paiva;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
