@@ -16,4 +16,4 @@ def home():
 
 @app.post("/analisar")
 async def analisar_imagem(image: UploadFile = File(...)):
-    return {"mensagem": f"IA recebeu a imagem {image.filename} e está pronta para processar!"}
+    return {"mensagem": f"A IA recebeu a imagem {image.filename} e está pronta para processar!"}
