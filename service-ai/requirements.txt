@@ -1,0 +1,7 @@
+# cd service-ai -> pip install -r requirements.txt para instalar as bibliotecas
+
+fastapi
+uvicorn
+python-multipart
+torch
+torchvision
