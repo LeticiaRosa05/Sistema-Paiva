@@ -26,7 +26,7 @@ public class UsuarioController {
     
     @PostMapping("/{id}/foto")
     public String testarUpload(@PathVariable Long id, @RequestParam("image") org.springframework.web.multipart.MultipartFile file) {
-        return "Recebi o arquivo" + file.getOriginalFilename() + " (" + file.getSize() + " bytes)" + " do usuário " + id;
+        return "Recebi o arquivo " + file.getOriginalFilename() + " (" + file.getSize() + " bytes)" + " do usuário " + id;
     }
     
 }
