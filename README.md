@@ -9,5 +9,6 @@ O sistema é composto de uma stack com núcleos de IA de análise de dados, envo
 - Executar o run no backend-java\sistema-paiva\src\main\java\com\paiva\SistemaPaivaApplication.java
 - Depois, executar 'uvicorn main:app --reload --port 8000' no VS Code na pasta 'service-ai', para rodar o Python (teste pra ver se o Python ta enxergando a placa de vídeo)
 - Abrir no navegador http://localhost:8000/ e conferir se está true o gpu_ativa
+- Para conferir se o WSL está reconhecendo a placa, abrir o WSL e executar nvidia-smi -> deve abrir uma tabela com as informações da placa de vídeo
 
 Para limpar o cache de compilação do Java -> Ctrl + C no terminal de debug e após ./mvnw clean, e aí restartar
