@@ -12,3 +12,8 @@ O sistema é composto de uma stack com núcleos de IA de análise de dados, envo
 - Para conferir se o WSL está reconhecendo a placa, abrir o WSL e executar nvidia-smi -> deve abrir uma tabela com as informações da placa de vídeo
 
 Para limpar o cache de compilação do Java -> Ctrl + C no terminal de debug e após ./mvnw clean, e aí restartar
+
+
+# Objetivo
+
+- Será levado em conta que o sistema seja de nível pericial e tenha a segurança e dados necessários para saber o que cada usuário fez, com logs de auditoria, metadados sobre os arquivos e processamento de mensagens, dados técnicos das imagens e validação sobre sua alteração;
