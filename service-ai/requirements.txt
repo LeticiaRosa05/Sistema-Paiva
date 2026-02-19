@@ -5,5 +5,5 @@ uvicorn
 python-multipart
 torch
 torchvision
-google-generativeai
+google-genai
 Pillow
