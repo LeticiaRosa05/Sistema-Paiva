@@ -14,6 +14,7 @@ except Exception as e:
     print(f"CRÍTICO: não foi possível ler apikey.txt: {e}")
 
 
+# Mostra no localhost:8000 se deu certo a execução do Python + Java
 @app.get("/")
 def home():
     return {
