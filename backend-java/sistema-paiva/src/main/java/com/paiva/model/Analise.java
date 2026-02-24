@@ -17,8 +17,7 @@ public class Analise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    @Column(name = "analise_ia")
+    @Column(name = "analise_ia", columnDefinition = "TEXT")
     private String analise_IA;
 
     LocalDateTime horaEnvio = LocalDateTime.now();
