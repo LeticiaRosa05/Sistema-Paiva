@@ -1,10 +1,10 @@
 package com.paiva.model;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Table(name = "analises")
 @Data
@@ -18,7 +18,7 @@ public class Analise {
     private Long id;
 
     @Lob
-    @Column(name = "analise_IA")
+    @Column(name = "analise_ia")
     private String analise_IA;
 
     LocalDateTime horaEnvio = LocalDateTime.now();

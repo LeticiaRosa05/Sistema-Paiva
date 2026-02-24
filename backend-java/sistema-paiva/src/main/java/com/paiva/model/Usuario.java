@@ -1,4 +1,5 @@
 package com.paiva.model;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
