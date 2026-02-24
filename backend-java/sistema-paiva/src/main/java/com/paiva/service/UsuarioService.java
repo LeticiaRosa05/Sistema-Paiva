@@ -18,4 +18,8 @@ public class UsuarioService {
         }
         return repository.save(usuario);
     }
+
+    public Usuario buscarPorId(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 }
