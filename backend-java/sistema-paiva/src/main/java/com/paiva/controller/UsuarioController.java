@@ -41,9 +41,13 @@ public class UsuarioController {
 
         // busca o ID do usuário que pediu a análise, cria um objeto análise vinculado à ele e então atribui o objeto ao retorno da análise. Por fim salva o objeto vinculado ao usuario no banco
         Usuario usuarioEncontrado = service.buscarPorId(id);
-        Analise analise = new Analise(usuarioEncontrado);
-        analise.setAnalise_IA(resultadoImagem);
-        repository.save(analise);
+        if (usuarioEncontrado == null) {
+            return "ERRO: usuário não encontrado";
+        } else {
+            Analise analise = new Analise(usuarioEncontrado);
+            analise.setAnalise_IA(resultadoImagem);
+            repository.save(analise);
+        }
 
         return "A imagem " + file.getOriginalFilename() + " (" + file.getSize() + " bytes)" + " do usuário " + id + "foi recebida. Resposta da análise: " + resultadoImagem;
     }
