@@ -35,7 +35,7 @@ public class UsuarioController {
     
     @PostMapping("/{id}/analisar")
     // Pede ao java o id de usuário presente na url e coloca na variável id; pede para que o Java procure no corpo da requisição um campo "file" que contenha um arquivo
-    public String uploadArquivo(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
+    public String uploadArquivo(@PathVariable Long id, @RequestParam MultipartFile file) throws Exception {
         // envia o arquivo e guarda a resposta do Python em resultadoAnalise
         String resultadoAnalise = aiService.chamarIA(file);
 
