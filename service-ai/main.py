@@ -1,7 +1,8 @@
-import io
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from google.genai import types
 from google import genai
-from PIL import Image
+import PIL.Image
+import io
 
 app = FastAPI()
 
@@ -32,7 +33,7 @@ async def analisar_arquivo(file: UploadFile = File(...)):
         # Identifica o tipo de arquivo
         mime_type = file.content_type
 
-        # Inicialização do dicionário para enviar os bytes para o Python/IA
+        # Inicialização do dicionário e prompt para enviar os bytes para o Python/IA
         documento_para_ia = []
         prompt = ""
 
@@ -50,7 +51,8 @@ async def analisar_arquivo(file: UploadFile = File(...)):
             Use um tom profissional, imparcial e extremamente detalhado.
             """
         elif mime_type.startswith("audio/"):
-            documento_para_ia = [{"mime_type": mime_type, "data": conteudo_arquivo}]
+            parte_audio = types.Part.from_bytes(data=conteudo_arquivo, mime_type="audio/mpeg")
+            documento_para_ia = [parte_audio]
             prompt = """
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
             Ouça este áudio e faça uma transcrição detalhada, análise de tom e identifique pontos suspeitos, contendo:
