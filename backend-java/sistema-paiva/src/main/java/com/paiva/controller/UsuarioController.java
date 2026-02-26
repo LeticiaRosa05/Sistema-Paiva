@@ -33,11 +33,11 @@ public class UsuarioController {
         return service.salvarUsuario(usuario);
     }
     
-    @PostMapping("/{id}/foto")
-    // Pede ao java o id de usuário presente na url e coloca na variável id; pede para que o Java procure no corpo da requisição um campo "image" que contenha um arquivo
-    public String uploadFoto(@PathVariable Long id, @RequestParam("image") MultipartFile file) throws Exception {
-        // envia o arquivo e guarda a resposta do Python em resultadoImagem
-        String resultadoImagem = aiService.chamarIA(file);
+    @PostMapping("/{id}/analisar")
+    // Pede ao java o id de usuário presente na url e coloca na variável id; pede para que o Java procure no corpo da requisição um campo "file" que contenha um arquivo
+    public String uploadArquivo(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws Exception {
+        // envia o arquivo e guarda a resposta do Python em resultadoAnalise
+        String resultadoAnalise = aiService.chamarIA(file);
 
         // busca o ID do usuário que pediu a análise, cria um objeto análise vinculado à ele e então atribui o objeto ao retorno da análise. Por fim salva o objeto vinculado ao usuario no banco
         Usuario usuarioEncontrado = service.buscarPorId(id);
@@ -45,10 +45,10 @@ public class UsuarioController {
             return "ERRO: usuário não encontrado";
         } else {
             Analise analise = new Analise(usuarioEncontrado);
-            analise.setAnalise_IA(resultadoImagem);
+            analise.setAnalise_IA(resultadoAnalise);
             repository.save(analise);
         }
 
-        return "A imagem " + file.getOriginalFilename() + " (" + file.getSize() + " bytes)" + " do usuário " + id + "foi recebida. Resposta da análise: " + resultadoImagem;
+        return "O arquivo " + file.getOriginalFilename() + " (" + file.getSize() + " bytes) do usuário " + id + " foi recebido. Resposta da análise: " + resultadoAnalise;
     }
 }
