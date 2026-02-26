@@ -63,8 +63,21 @@ async def analisar_arquivo(file: UploadFile = File(...)):
             
             Use um tom profissional, imparcial e extremamente detalhado.
             """
+        elif mime_type == "application/pdf":
+            parte_pdf = types.Part.from_bytes(data=conteudo_arquivo, mime_type="application/pdf")
+            documento_para_ia = [parte_pdf]
+            prompt = """
+            Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
+            Analise este documento buscando rasusras ou inconsistências, contendo:
+            1. IDENTIFICAÇÃO: Do que se trata o documento e se ele possui dados sensíveis.
+            2. CONTEXTO: Descrição detalhada do âmbito em que o documento se encaixa.
+            3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
+            4. CONCLUSÃO: Um parecer técnico resumido sobre o áudio.
+            
+            Use um tom profissional, imparcial e extremamente detalhado.
+            """
         else:
-            raise HTTPException(status_code=400, detail="Tipo de arquivo não suportado. Envie imagem ou áudio.")
+            raise HTTPException(status_code=400, detail=f"Arquivo {mime_type} não suportado.")
 
         # Chamada multimodal (texto + imagem) -> enviamos a instrução e a foto para o Google
         response = client.models.generate_content(model="gemini-2.5-flash", contents=[prompt, *documento_para_ia])
