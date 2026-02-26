@@ -17,13 +17,13 @@ public class AIService {
         this.restTemplate = restTemplate;
     }
 
-    // Recebe a imagem que veio do Controller
+    // Recebe o arquivo que veio do Controller
     public String chamarIA(MultipartFile file) throws Exception {
         String urlPython = "http://localhost:8000/analisar";
 
         // Define o envio do arquivo como campos de formulário em vez de um texto simples
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image", new ByteArrayResource(file.getBytes()) {
+        body.add("file", new ByteArrayResource(file.getBytes()) {
             @Override
             public String getFilename() {
                 return file.getOriginalFilename();
