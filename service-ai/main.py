@@ -24,25 +24,48 @@ def home():
 
 # Config da identidade (persona e estruturação da resposta e conexão com o modelo) da IA
 @app.post("/analisar")
-async def analisar_imagem(image: UploadFile = File(...)):
+async def analisar_arquivo(file: UploadFile = File(...)):
     try:
-        # leitura dos bits da imagem que o Java enviou + visão da imagem pelo Python
-        conteudo_imagem = await image.read()
-        imagem_pillow = Image.open(io.BytesIO(conteudo_imagem))
+        # leitura dos bits do arquivo recebido do Java
+        conteudo_arquivo = await file.read()
 
-        prompt = """
-        Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
-        Analise a imagem enviada e forneça um relatório estruturado contendo:
-        1. IDENTIFICAÇÃO: O que é o objeto ou cena principal.
-        2. CONTEXTO: Descrição detalhada do ambiente.
-        3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
-        4. CONCLUSÃO: Um parecer técnico resumido sobre a imagem.
-        
-        Use um tom profissional, imparcial e extremamente detalhado.
-        """
+        # Identifica o tipo de arquivo
+        mime_type = file.content_type
+
+        # Inicialização do dicionário para enviar os bytes para o Python/IA
+        documento_para_ia = []
+        prompt = ""
+
+        if mime_type.startswith("image/"):
+            imagem_pillow = PIL.Image.open(io.BytesIO(conteudo_arquivo))
+            documento_para_ia = [imagem_pillow]
+            prompt = """
+            Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
+            Analise a imagem enviada e forneça um relatório estruturado contendo:
+            1. IDENTIFICAÇÃO: O que é o objeto ou cena principal.
+            2. CONTEXTO: Descrição detalhada do ambiente.
+            3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
+            4. CONCLUSÃO: Um parecer técnico resumido sobre a imagem.
+            
+            Use um tom profissional, imparcial e extremamente detalhado.
+            """
+        elif mime_type.startswith("audio/"):
+            documento_para_ia = [{"mime_type": mime_type, "data": conteudo_arquivo}]
+            prompt = """
+            Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
+            Ouça este áudio e faça uma transcrição detalhada, análise de tom e identifique pontos suspeitos, contendo:
+            1. IDENTIFICAÇÃO: O que é o acontecimento ou cena principal descrita.
+            2. CONTEXTO: Descrição detalhada do que o áudio insinua ou defende.
+            3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
+            4. CONCLUSÃO: Um parecer técnico resumido sobre o áudio.
+            
+            Use um tom profissional, imparcial e extremamente detalhado.
+            """
+        else:
+            raise HTTPException(status_code=400, detail="Tipo de arquivo não suportado. Envie imagem ou áudio.")
 
         # Chamada multimodal (texto + imagem) -> enviamos a instrução e a foto para o Google
-        response = client.models.generate_content(model="gemini-2.5-flash", contents=[prompt, imagem_pillow])
+        response = client.models.generate_content(model="gemini-2.5-flash", contents=[prompt, *documento_para_ia])
 
         # Devolução da análise para o Java
         return {"Análise": response.text}
