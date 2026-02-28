@@ -8,6 +8,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.stereotype.Service;
 import org.springframework.http.MediaType;
 import org.springframework.http.*;
+import java.util.Map;
 
 @Service
 public class AIService {
@@ -39,6 +40,12 @@ public class AIService {
         // Envia de fato para o Python e aguarda a resposta
         ResponseEntity<String> response = restTemplate.postForEntity(urlPython, requestEntity, String.class);
         return response.getBody();
+    }
+
+    public String chamarChat(Map<String, Object> payload) {
+        String url = "http://localhost:8000/chat"; // novo endpoint de sessão de chat
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.postForObject(url, payload, String.class);
     }
 }
  
