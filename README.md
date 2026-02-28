@@ -17,3 +17,15 @@ Para limpar o cache de compilação do Java -> Ctrl + C no terminal de debug e a
 # Objetivo
 
 - Será levado em conta que o sistema seja de nível pericial e tenha a segurança e dados necessários para saber o que cada usuário fez, com logs de auditoria, metadados sobre os arquivos e processamento de mensagens, dados técnicos das imagens e validação sobre sua alteração;
+
+# Criando um usuário pelo postman
+
+- Para criar um usuário, abrir a url ´´´http://localhost:8080/usuarios´´´ com método POST, ir em Body -> raw, em formato 'JSON' em vez de 'Text' e enviar o JSON abaixo
+- Imagem de exemplo na pasta img "usuarioPostman.png"
+
+´´´
+{
+    "nome": Nome Usuário,
+    "email": email@emailex.com
+}
+´´´
