@@ -5,5 +5,5 @@ import com.paiva.model.Mensagem;
 import java.util.List;
 
 public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
-    List<Mensagem> findByAnaliseIdOrderbyHoraMensagemAsc(Long analiseId);
+    List<Mensagem> findByAnaliseIdOrderByHoraMensagemAsc(Long analiseId);
 }
