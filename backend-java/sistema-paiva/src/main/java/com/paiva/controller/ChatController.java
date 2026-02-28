@@ -58,7 +58,7 @@ public class ChatController {
             }).toList();
             payload.put("historico", historicoFormatado);
 
-            // Chama o Python e pega a reposta dele e então salva a resposta da IA no banco
+            // Chama o Python, envia o JSON pra ele e então salva a resposta da IA no banco
             String respostaIA = aiService.chamarChat(payload);
             Mensagem msgIA = new Mensagem(analise, respostaIA, "model");
             repository.save(msgIA);

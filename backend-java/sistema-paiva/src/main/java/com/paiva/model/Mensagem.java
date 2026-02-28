@@ -31,7 +31,7 @@ public class Mensagem {
         this.analise = analise;
     }
 
-    // Construtor manual para o ChatController
+    // Construtor manual para o ChatController -> permite apenas a chamada de 'Mensagem' e a passagem de parâmetros em vez de definir todas as variáveis a serem guardadas
     public Mensagem(Analise analise, String texto, String origem) {
         this.horaMensagem = LocalDateTime.now();
         this.origemRemetente = origem;

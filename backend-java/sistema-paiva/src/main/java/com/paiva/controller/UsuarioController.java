@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.paiva.repository.AnaliseRepository;
 import com.paiva.service.UsuarioService;
 import com.paiva.service.AIService;
