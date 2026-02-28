@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from google.genai import types
+from pydantic import BaseModel
 from google import genai
 import PIL.Image
 import io
@@ -22,6 +23,12 @@ def home():
         "status": "Sistema Paiva IA Online",
         "motor_ativo": "Gemini 2.5 Flash"
     }
+
+# Modelo de chat para receber do Java
+class ChatPayload(BaseModel):
+    laudo_origem: str
+    historico: list
+    mensagem_atual: str
 
 # Config da identidade (persona e estruturação da resposta e conexão com o modelo) da IA
 @app.post("/analisar")
@@ -55,7 +62,7 @@ async def analisar_arquivo(file: UploadFile = File(...)):
             documento_para_ia = [parte_audio]
             prompt = """
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
-            Ouça este áudio e faça uma transcrição detalhada, análise de tom e identifique pontos suspeitos, contendo:
+            Ouça este áudio e forneça um relatório estruturado, análise de tom e identifique pontos suspeitos, contendo:
             1. IDENTIFICAÇÃO: O que é o acontecimento ou cena principal descrita.
             2. CONTEXTO: Descrição detalhada do que o áudio insinua ou defende.
             3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
@@ -68,7 +75,7 @@ async def analisar_arquivo(file: UploadFile = File(...)):
             documento_para_ia = [parte_pdf]
             prompt = """
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
-            Analise este documento buscando rasusras ou inconsistências, contendo:
+            Analise este documento buscando rasuras ou inconsistências e forneça um relatório estruturado, contendo:
             1. IDENTIFICAÇÃO: Do que se trata o documento e se ele possui dados sensíveis.
             2. CONTEXTO: Descrição detalhada do âmbito em que o documento se encaixa.
             3. ANOMALIAS: Identifique qualquer elemento suspeito, irregular ou fora do comum.
@@ -88,3 +95,37 @@ async def analisar_arquivo(file: UploadFile = File(...)):
     except Exception as e:
         print(f"ERRO NA ANÁLISE: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro interno no motor de IA: {str(e)}")
+
+# Endpoint do chat
+@app.post("/chat")
+async def chat(payload: ChatPayload):
+    try:
+        instrucao_sistema = f"""
+        Você é o assistente de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível. 
+        O seu laudo técnico original foi este: {payload.laudo_original}
+        Responda às perguntas do usuário baseando-se estritamente nos dados deste laudo 
+        e no histórico da conversa abaixo. Seja técnico e preciso.
+        """
+
+        mensagens_gemini = []
+        for msg in payload.historico:
+            mensagens_gemini.append({
+                "role": msg['role'],
+                "parts": [{"text": msg['parts']}]
+            })
+        
+        mensagens_gemini.append({
+            "role": "user",
+            "parts": [{"text": payload.mensagem_atual}]
+        })
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            config=types.GenerateContentConfig(system_instruction=instrucao_sistema),
+            contents=mensagens_gemini
+        )
+
+        return response.text
+    except Exception as e:
+        print(f"ERRO DE CHAT: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
