@@ -30,4 +30,12 @@ public class Mensagem {
     public Mensagem(Analise analise) {
         this.analise = analise;
     }
+
+    // Construtor manual para o ChatController
+    public Mensagem(Analise analise, String texto, String origem) {
+        this.horaMensagem = LocalDateTime.now();
+        this.origemRemetente = origem;
+        this.texto_mensagem = texto;
+        this.analise = analise;
+    }
 }
