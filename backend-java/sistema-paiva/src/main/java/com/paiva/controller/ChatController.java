@@ -5,8 +5,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import com.paiva.repository.MensagemRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import com.paiva.service.RelatorioService;
 import com.paiva.service.MensagemService;
+import com.paiva.repository.MensagemRepository;
 import com.paiva.model.ChatRequest;
 import com.paiva.service.AIService;
 import com.paiva.model.Mensagem;
@@ -15,25 +21,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 @RestController
 @RequestMapping("/analises")
 public class ChatController {
 
+    private RelatorioService rltService;
     private MensagemRepository repository;
-    private MensagemService service;
+    private MensagemService msgService;
     private AIService aiService;
 
 
-    public ChatController(MensagemService service, MensagemRepository repository, AIService aiService) {
+    public ChatController(MensagemService msgService, RelatorioService rltService, MensagemRepository repository, AIService aiService) {
         this.repository = repository;
+        this.msgService = msgService;
+        this.rltService = rltService;
         this.aiService = aiService;
-        this.service = service;
     }
 
     @PostMapping("/{analiseId}/chat")
     public String criarChat(@PathVariable Long analiseId, @RequestBody ChatRequest request) {
         // Busca pela análise que originou o chat
-        Analise analise = service.buscarPorId(analiseId);
+        Analise analise = msgService.buscarPorId(analiseId);
         if (analise == null) {
             return "ERRO: análise inexistente";
         } else {
@@ -66,4 +76,18 @@ public class ChatController {
             return respostaIA;
         }
     }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> baixarRelatorio(@PathVariable Long id) {
+        Analise analise = msgService.buscarPorId(id);
+        List<Mensagem> historico = repository.findByAnaliseIdOrderByHoraMensagemAsc(id);
+
+        byte[] pdf = rltService.gerarRelatorioPdf(analise, historico);
+        HttpHeaders headers = new HttpHeaders(); 
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("filename", "relatorio-paiva-" + id + ".pdf");
+
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
+    
 }
