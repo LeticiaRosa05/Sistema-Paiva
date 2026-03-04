@@ -18,31 +18,50 @@ public class RelatorioService {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // Título do PDF gerado
+            // Fontes a serem usadas
             Font fontTitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+            Font fontSubtitulo = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+            Font fontNegrito = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+            Font fontNormal = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+            // Título do PDF gerado
             Paragraph titulo = new Paragraph("SISTEMA PAIVA - RELATÓRIO TÉCNICO PERICIAL", fontTitulo);
             titulo.setAlignment(Element.ALIGN_CENTER);
+            titulo.setSpacingAfter(20);
             document.add(titulo);
 
-            document.add(new Paragraph(" ")); // Linha em branco
+            // Linha de ID da Análise
+            Paragraph pId = new Paragraph();
+            pId.add(new Chunk("ID da Análise: ", fontNegrito));
+            pId.add(new Chunk(String.valueOf(analise.getId()), fontNormal));
+            document.add(pId);
 
-            // Adiciona os dados da análise
-            document.add(new Paragraph("ID da Análise: " + analise.getId()));
-            document.add(new Paragraph("Perito responsável: " + analise.getUsuario().getNome()));
-            document.add(new Paragraph("-----------------------------------------------------------------------"));
+            // Linha de Perito
+            Paragraph pPerito = new Paragraph();
+            pPerito.add(new Chunk("Perito responsável: ", fontNegrito));
+            pPerito.add(new Chunk(analise.getUsuario().getNome(), fontNormal));
+            document.add(pPerito);
+            document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
+            document.add(new Paragraph(" "));
 
             // Laudo de origem do chat
-            document.add(new Paragraph("Laudo técnico original: ", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            document.add(new Paragraph(analise.getAnalise_IA()));
-
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Laudo técnico original: ", fontSubtitulo));
+            Paragraph pLaudo = new Paragraph(formatarTextoIA(analise.getAnalise_IA()), fontNormal);
+            pLaudo.setSpacingAfter(15);
+            document.add(pLaudo);
 
             // Histórico do chat
             if (!historico.isEmpty()) {
-                document.add(new Paragraph("Detalhamento e questionamentos: ", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+                document.add(new Paragraph("Detalhamento e questionamentos: ", fontSubtitulo));
+
                 for (Mensagem msg : historico) {
-                    String prefixo = msg.getOrigemRemetente().equals("user") ? "Pergunta": "Resposta da IA: ";
-                    document.add(new Paragraph(prefixo + msg.getTexto_mensagem()));
+                    Paragraph pMsg = new Paragraph();
+                    String label = msg.getOrigemRemetente().equals("user") ? "Perito: " : "Resposta da IA: ";
+
+                    pMsg.add(new Chunk(label, fontNegrito));
+                    pMsg.add(new Chunk(formatarTextoIA(msg.getTexto_mensagem()), fontNormal));
+                    pMsg.setSpacingAfter(10);
+                    document.add(pMsg);
                 }
             }
             document.close();
@@ -50,5 +69,11 @@ public class RelatorioService {
             e.printStackTrace();
         }
         return out.toByteArray();
+    }
+
+    // Remove caracteres indesejados da resposta da IA
+    private String formatarTextoIA(String texto) {
+        if (texto == null) return "";
+        return texto.replace("**", "").replace("* ", "• ");
     }
 }
