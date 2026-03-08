@@ -1,5 +1,7 @@
 package com.paiva.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,8 @@ import com.paiva.model.Usuario;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private AnaliseRepository repository;
     private final AIService aiService;
     private UsuarioService service;
@@ -29,6 +33,8 @@ public class UsuarioController {
     
     @PostMapping
     public Usuario criarUsuario(@RequestBody Usuario usuario) {
+        String senhaCriptografada = passwordEncoder.encode(usuario.getSenha()); // criptografa a senha do usuário para salvar com o restante dos dados
+        usuario.setSenha(senhaCriptografada);
         return service.salvarUsuario(usuario);
     }
     
