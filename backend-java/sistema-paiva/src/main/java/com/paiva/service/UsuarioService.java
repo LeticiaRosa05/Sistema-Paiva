@@ -1,5 +1,6 @@
 package com.paiva.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import com.paiva.repository.UsuarioRepository;
 import com.paiva.model.Usuario;
@@ -21,5 +22,9 @@ public class UsuarioService {
 
     public Usuario buscarPorId(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public UserDetails findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 }
