@@ -2,10 +2,10 @@ package com.paiva.service;
 
 import org.springframework.stereotype.Service;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.*;
 import java.io.ByteArrayOutputStream;
 import com.paiva.model.Mensagem;
 import com.paiva.model.Analise;
-import com.lowagie.text.*;
 import java.util.List;
 
 @Service

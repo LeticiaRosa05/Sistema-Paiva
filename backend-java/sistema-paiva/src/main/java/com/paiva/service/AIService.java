@@ -1,9 +1,9 @@
 package com.paiva.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.util.MultiValueMap;
 import org.springframework.stereotype.Service;
 import org.springframework.http.MediaType;

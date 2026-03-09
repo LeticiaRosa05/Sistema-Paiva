@@ -10,18 +10,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import com.paiva.repository.MensagemRepository;
 import com.paiva.service.RelatorioService;
 import com.paiva.service.MensagemService;
-import com.paiva.repository.MensagemRepository;
-import com.paiva.model.ChatRequest;
 import com.paiva.service.AIService;
+import com.paiva.model.ChatRequest;
 import com.paiva.model.Mensagem;
 import com.paiva.model.Analise;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 @RestController
 @RequestMapping("/analises")
