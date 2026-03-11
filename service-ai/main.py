@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from google.genai import types
 from pydantic import BaseModel
 from google import genai
+from datetime import datetime
 import PIL.Image
 import io
 
@@ -33,6 +34,7 @@ class ChatPayload(BaseModel):
 # Config da identidade (persona e estruturação da resposta e conexão com o modelo) da IA
 @app.post("/analisar")
 async def analisar_arquivo(file: UploadFile = File(...)):
+    data_hoje = datetime.now().strftime("%d/%m/%Y")
     try:
         # leitura dos bits do arquivo recebido do Java
         conteudo_arquivo = await file.read()
@@ -47,7 +49,8 @@ async def analisar_arquivo(file: UploadFile = File(...)):
         if mime_type.startswith("image/"):
             imagem_pillow = PIL.Image.open(io.BytesIO(conteudo_arquivo))
             documento_para_ia = [imagem_pillow]
-            prompt = """
+            prompt = f"""
+            USE A DATA {data_hoje} COMO A DATA DA ANÁLISE A SEGUIR, ignore datas de criação de arquivos para fins de datação do laudo atual.
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
             Analise a imagem enviada e forneça um relatório estruturado contendo:
             1. IDENTIFICAÇÃO: O que é o objeto ou cena principal.
@@ -60,7 +63,8 @@ async def analisar_arquivo(file: UploadFile = File(...)):
         elif mime_type.startswith("audio/"):
             parte_audio = types.Part.from_bytes(data=conteudo_arquivo, mime_type="audio/mpeg")
             documento_para_ia = [parte_audio]
-            prompt = """
+            prompt = f"""
+            USE A DATA {data_hoje} COMO A DATA DA ANÁLISE A SEGUIR, ignore datas de criação de arquivos para fins de datação do laudo atual.
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
             Ouça este áudio e forneça um relatório estruturado, análise de tom e identifique pontos suspeitos, contendo:
             1. IDENTIFICAÇÃO: O que é o acontecimento ou cena principal descrita.
@@ -73,7 +77,8 @@ async def analisar_arquivo(file: UploadFile = File(...)):
         elif mime_type == "application/pdf":
             parte_pdf = types.Part.from_bytes(data=conteudo_arquivo, mime_type="application/pdf")
             documento_para_ia = [parte_pdf]
-            prompt = """
+            prompt = f"""
+            USE A DATA {data_hoje} COMO A DATA DA ANÁLISE A SEGUIR, ignore datas de criação de arquivos para fins de datação do laudo atual.
             Você é o motor de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
             Analise este documento buscando rasuras ou inconsistências e forneça um relatório estruturado, contendo:
             1. IDENTIFICAÇÃO: Do que se trata o documento e se ele possui dados sensíveis.
@@ -99,12 +104,13 @@ async def analisar_arquivo(file: UploadFile = File(...)):
 # Endpoint do chat
 @app.post("/chat")
 async def chat(payload: ChatPayload):
+    data_hoje = dt.now().strftime("%d/%m/%Y")
     try:
         instrucao_sistema = f"""
-        Você é o assistente de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível. 
+        USE A DATA {data_hoje} COMO A DATA DA ANÁLISE A SEGUIR, ignore datas de criação de arquivos para fins de datação do laudo atual. 
+        Você é o assistente de inteligência do Sistema Paiva, uma plataforma de análise forense de alto nível.
         O seu laudo técnico original foi este: {payload.laudo_origem}
-        Responda às perguntas do usuário baseando-se nos dados deste laudo 
-        e no histórico da conversa abaixo. Seja técnico e preciso. Não se prenda somente nos dados literais que você descreveu no laudo, mas faça uma reanálise caso seja necessário para providenciar informações mais precisas, mantendo a fidelidade ao arquivo providenciado.
+        Responda às perguntas do usuário baseando-se nos dados deste laudo e no histórico da conversa abaixo. Seja técnico e preciso. Não se prenda somente nos dados literais que você descreveu no laudo, mas faça uma reanálise caso seja necessário para providenciar informações mais precisas, mantendo a fidelidade ao arquivo providenciado.
         """
 
         mensagens_gemini = []
