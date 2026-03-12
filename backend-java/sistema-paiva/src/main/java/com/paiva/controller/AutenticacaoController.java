@@ -9,6 +9,7 @@ import com.paiva.security.TokenService;
 import com.paiva.model.Usuario;
 import lombok.var;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/login")
 public class AutenticacaoController {

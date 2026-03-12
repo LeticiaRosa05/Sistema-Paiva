@@ -2,19 +2,15 @@ package com.paiva.controller;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 import com.paiva.repository.AnaliseRepository;
 import com.paiva.service.UsuarioService;
 import com.paiva.service.AIService;
 import com.paiva.model.Analise;
 import com.paiva.model.Usuario;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
