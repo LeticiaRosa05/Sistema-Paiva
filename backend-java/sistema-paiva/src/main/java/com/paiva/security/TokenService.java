@@ -21,15 +21,15 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("Sistema Paiva")
                     .withSubject(usuario.getEmail())
-                    .withExpiresAt(dataExpiracao())
+                    .withExpiresAt(loginExpiracao())
                     .sign(algoritmo);
         } catch (Exception exception) {
             throw new RuntimeException("Erro ao gerar token", exception);
         }
     }
 
-    private Instant dataExpiracao() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    private Instant loginExpiracao() { // o login expira em 5h
+        return LocalDateTime.now().plusHours(5).toInstant(ZoneOffset.of("-03:00"));
     }
 
     public String getSubject(String tokenJWT) {
