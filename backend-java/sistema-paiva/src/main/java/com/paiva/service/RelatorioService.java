@@ -1,16 +1,19 @@
 package com.paiva.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.io.ByteArrayOutputStream;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.*;
-import java.io.ByteArrayOutputStream;
-import com.paiva.model.Mensagem;
-import com.paiva.model.Analise;
+import com.paiva.model.*;
 import java.util.List;
 
 @Service
 public class RelatorioService {
     public byte[] gerarRelatorioPdf(Analise analise, List<Mensagem> historico) {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
 
@@ -40,6 +43,7 @@ public class RelatorioService {
             Paragraph pPerito = new Paragraph();
             pPerito.add(new Chunk("Perito responsável: ", fontNegrito));
             pPerito.add(new Chunk(analise.getUsuario().getNome(), fontNormal));
+            pPerito.add(new Chunk("\nImpresso por " + usuarioLogado.getNome() + ", em " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), fontNegrito));
             document.add(pPerito);
             document.add(new Paragraph("----------------------------------------------------------------------------------------------------------------------------------"));
             document.add(new Paragraph(" "));
