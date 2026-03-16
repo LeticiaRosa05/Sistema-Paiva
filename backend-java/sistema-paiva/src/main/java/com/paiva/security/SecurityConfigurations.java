@@ -1,5 +1,6 @@
 package com.paiva.security;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,7 @@ public class SecurityConfigurations {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable()) // Desativamos CSRF para usar Tokens JWT
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sistema stateless -> o Java vai olhar o token de usuário em cada requisição em vez de guardar quem está logado na memória -> sistema rápido e escalável 
                 .authorizeHttpRequests(req -> {
