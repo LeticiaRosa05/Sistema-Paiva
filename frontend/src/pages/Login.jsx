@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import api from '../services/api';
 
 function Login() {
+  const [name, setItem] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', { email, senha });
+      const response = await api.post('/login', { name, email, senha });
       localStorage.setItem('token', response.data.token);
       alert("Bem-vinda, Perita Letícia!");
       // Aqui você usaria o useNavigate para ir para a Dashboard
@@ -30,6 +31,13 @@ function Login() {
       <h1>Sistema Paiva</h1>
       <p>Análise Forense Inteligente</p>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', width: '300px', gap: '10px' }}>
+        <input
+        type="name"
+        placeholder='Nome de usuário'
+        value={name}
+        onChange={(e) => setItem(e.target.value)}
+        required
+        />
         <input 
           type="email" 
           placeholder="E-mail" 
