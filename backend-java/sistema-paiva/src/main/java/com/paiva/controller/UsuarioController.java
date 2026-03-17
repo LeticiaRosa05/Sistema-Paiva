@@ -10,6 +10,7 @@ import com.paiva.service.UsuarioService;
 import com.paiva.service.AIService;
 import com.paiva.model.Analise;
 import com.paiva.model.Usuario;
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -46,5 +47,11 @@ public class UsuarioController {
         repository.save(analise);
 
         return resultadoAnalise;
+    }
+
+    @GetMapping("/analises")
+    public List<Analise> analisesUsuario() {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return repository.findByUsuario(usuarioLogado);
     }
 }
