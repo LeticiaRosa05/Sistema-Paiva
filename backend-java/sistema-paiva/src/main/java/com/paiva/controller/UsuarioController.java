@@ -1,5 +1,6 @@
 package com.paiva.controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,22 +35,16 @@ public class UsuarioController {
         return service.salvarUsuario(usuario);
     }
     
-    @PostMapping("/{id}/analisar")
-    // Pede ao java o id de usuário presente na url e coloca na variável id; pede para que o Java procure no corpo da requisição um campo "file" que contenha um arquivo
-    public String uploadArquivo(@PathVariable Long id, @RequestParam MultipartFile file) throws Exception {
-        // envia o arquivo e guarda a resposta do Python em resultadoAnalise
+    @PostMapping("/analisar")
+    // Pede para que o Java procure no corpo da requisição um campo "file" que contenha um arquivo
+    public String uploadArquivo(@RequestParam MultipartFile file) throws Exception {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); // Busca quem é o usuário ativo para atribuir à ele a nova análise
+
         String resultadoAnalise = aiService.chamarIA(file);
+        Analise analise = new Analise(usuarioLogado);
+        analise.setAnalise_IA(resultadoAnalise);
+        repository.save(analise);
 
-        // busca o ID do usuário que pediu a análise, cria um objeto análise vinculado à ele e então atribui o objeto ao retorno da análise. Por fim salva o objeto vinculado ao usuario no banco
-        Usuario usuarioEncontrado = service.buscarPorId(id);
-        if (usuarioEncontrado == null) {
-            return "ERRO: usuário não encontrado";
-        } else {
-            Analise analise = new Analise(usuarioEncontrado);
-            analise.setAnalise_IA(resultadoAnalise);
-            repository.save(analise);
-        }
-
-        return "O arquivo " + file.getOriginalFilename() + " (" + file.getSize() + " bytes) do usuário " + id + " foi recebido. Resposta da análise: " + resultadoAnalise;
+        return resultadoAnalise;
     }
 }
