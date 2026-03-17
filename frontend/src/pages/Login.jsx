@@ -1,3 +1,4 @@
+import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import api from '../services/api';
 
@@ -12,7 +13,7 @@ function Login() {
       const response = await api.post('/login', { name, email, senha });
       localStorage.setItem('token', response.data.token);
       alert("Bem-vinda, Perita Letícia!");
-      // Aqui você usaria o useNavigate para ir para a Dashboard
+
       const tempoTotal = 5 * 60 * 60 * 1000; // 5 horas em milissegundos
       setTimeout(() => {
           alert("O acesso expira em 30 minutos.");
@@ -21,6 +22,9 @@ function Login() {
       setTimeout(() => {
           alert("Atenção: Seu acesso expira em 15 minutos.");
       }, tempoTotal - (15 * 60 * 1000));
+
+      Navigate('/dashboard'); // após o login ter sucesso, encaminha o usuário para o dashboard, que vai ser a tela padrão do sistema
+
     } catch (error) {
       alert("Erro ao entrar. Verifique suas credenciais.");
     }
