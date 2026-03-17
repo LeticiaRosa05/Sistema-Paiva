@@ -25,12 +25,13 @@ public class AutenticacaoController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
         var authentication = manager.authenticate(authenticationToken);
 
-        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+        var usuario = (Usuario) authentication.getPrincipal();
+        var tokenJWT = tokenService.gerarToken(usuario);
 
-        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, usuario.getNome()));
     }
 }
 
 // DTOs simples para a troca de dados
 record DadosAutenticacao(String email, String senha) {}
-record DadosTokenJWT(String token) {}
+record DadosTokenJWT(String token, String nome) {}
