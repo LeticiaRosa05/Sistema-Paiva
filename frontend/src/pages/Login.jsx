@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import api from '../services/api';
 
@@ -6,6 +6,8 @@ function Login() {
   const [name, setItem] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+
+  const navigate = useNavigate();
   
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,10 +25,11 @@ function Login() {
           alert("Atenção: Seu acesso expira em 15 minutos.");
       }, tempoTotal - (15 * 60 * 1000));
 
-      Navigate('/dashboard'); // após o login ter sucesso, encaminha o usuário para o dashboard, que vai ser a tela padrão do sistema
+      navigate('/dashboard'); // após o login ter sucesso, encaminha o usuário para o dashboard, que vai ser a tela padrão do sistema
 
     } catch (error) {
-      alert("Erro ao entrar. Verifique suas credenciais.");
+      console.error("ERRO DETALHADO:", error);
+      alert("Erro: " + error.message);
     }
   };
 
