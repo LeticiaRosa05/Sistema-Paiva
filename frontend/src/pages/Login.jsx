@@ -12,9 +12,9 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', { name, email, senha });
+      const response = await api.post('/login', { email, senha });
       localStorage.setItem('token', response.data.token);
-      alert("Bem-vinda, Perita Letícia!");
+      localStorage.setItem('nomeUsuario', response.data.nome)
 
       const tempoTotal = 5 * 60 * 60 * 1000; // 5 horas em milissegundos
       setTimeout(() => {
