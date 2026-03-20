@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import com.paiva.repository.AnaliseRepository;
 import com.paiva.service.UsuarioService;
 import com.paiva.service.AIService;
@@ -38,7 +39,7 @@ public class UsuarioController {
     
     @PostMapping("/analisar")
     // Pede para que o Java procure no corpo da requisição um campo "file" que contenha um arquivo
-    public String uploadArquivo(@RequestParam MultipartFile file) throws Exception {
+    public ResponseEntity<Analise> uploadArquivo(@RequestParam MultipartFile file) throws Exception {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal(); // Busca quem é o usuário ativo para atribuir à ele a nova análise
 
         String resultadoAnalise = aiService.chamarIA(file);
@@ -46,7 +47,7 @@ public class UsuarioController {
         analise.setAnalise_IA(resultadoAnalise);
         repository.save(analise);
 
-        return resultadoAnalise;
+        return ResponseEntity.ok(analise);
     }
 
     @GetMapping("/analises")
