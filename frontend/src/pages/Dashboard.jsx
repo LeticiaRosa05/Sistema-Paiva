@@ -13,22 +13,24 @@ function Dashboard() {
   useEffect(() => {
     const nomeSalvo = localStorage.getItem('nomeUsuario');
     if (nomeSalvo) setNomeUsuario(nomeSalvo);
-  }, []);
-
-  useEffect(() => {
-    async function carregarHistorico() {
-        try {
-            const response = await api.get('/usuarios/analises');
-            setHistorico(response.data);
-        } catch (error) {
-            console.error("Erro ao carregar histórico", error);
-        }
-    }
     carregarHistorico();
   }, []);
 
+  async function carregarHistorico() {
+      try {
+          const response = await api.get('/usuarios/analises');
+          const historicoOrdenado = response.data.sort((a, b) => { // ordena o histórico de acordo com a data em que os itens foram criados
+            return new Date(b.horaEnvio) - new Date(a.horaEnvio);
+          });
+          setHistorico(historicoOrdenado);
+      } catch (error) {
+          console.error("Erro ao carregar histórico", error);
+      }
+  }
+
   const handleLogout = () => { // retira o token do localstorage ao deslogar
     localStorage.removeItem('token');
+    localStorage.removeItem('nomeUsuario');
     navigate('/login');
   };
 
@@ -38,21 +40,17 @@ function Dashboard() {
     formData.append('file', arquivo);
 
     setCarregando(true);
-    setResultado("");
+
     try {
-        const response = await api.post('/usuarios/analisar', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-        });
+      const response = await api.post('/usuarios/analisar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+      });
 
-        console.log("Resposta do Java:", response.data);
-        if (response.data) {
-            setResultado(response.data);
-        } else {
-            console.warn("Houve resposta do Java, mas o corpo está vazio")
-        }
+      const textoAnalise = response.data.analise_IA || response.data;
+      setResultado(textoAnalise);
 
-        const historicoAtualizado = await api.get('usuarios/analises'); // atualiza o histórico para a nova análise aparecer n lista
-        setHistorico(historicoAtualizado.data);
+      carregarHistorico(); // atualiza o histórico para a nova análise aparecer na lista
+
     } catch (error) {
         console.error("ERRO NO UPLOAD:", error.response?.data || error.message);
         alert("Erro na análise. Verifique o console.");
