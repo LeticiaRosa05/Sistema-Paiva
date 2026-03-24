@@ -8,6 +8,7 @@ function Dashboard() {
   const [resultado, setResultado] = useState("");
   const [historico, setHistorico] = useState([]);
   const [nomeUsuario, setNomeUsuario] = useState("--");
+  const [analiseSelecionada, setAnaliseSelecionada] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,16 +64,14 @@ const exportarPDF = async () => {
     const idAnalise = historico.find(h => h.analise_IA === resultado)?.id || "N/A";
 
     imprimirLinhaInfo("ID da análise: ", `${idAnalise}`);
-    imprimirLinhaInfo("Perito responsável: ", "Letícia Rosa");
-    imprimirLinhaInfo("Impresso por: ", nomeUsuario);
+    imprimirLinhaInfo("Perito responsável: ", nomeUsuario);
     imprimirLinhaInfo("Data de emissão: ", `${dataEmissao}, ${horaEmissao}`);
 
     y += 2;
     doc.setTextColor(0, 31, 63);
-    doc.text("-".repeat(95), margemEsquerda, y); // Linha divisória
+    doc.text("-".repeat(145), margemEsquerda, y); // Linha divisória
     y += 12;
-    
-    // --- CONTEÚDO DO LAUDO ---
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
@@ -82,7 +81,7 @@ const exportarPDF = async () => {
     doc.setFont("times", "normal");
     doc.setFontSize(12);
 
-    // Limpeza de caracteres de formatação da IA
+    // Limpeza de caracteres da mensagem da IA
     const textoLimpo = resultado.replace(/\*\*/g, "").replace(/\* /g, "• ");
     const linhas = doc.splitTextToSize(textoLimpo, 170);
 
@@ -95,7 +94,7 @@ const exportarPDF = async () => {
       y += 7;
     });
 
-    // --- ENUMERADOR DE PÁGINAS ---
+    // enumerador de páginas
     const totalPaginas = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPaginas; i++) {
       doc.setPage(i);
@@ -108,7 +107,7 @@ const exportarPDF = async () => {
       );
     }
 
-    doc.save(`Laudo_PAIVA_ID${idAnalise}.pdf`);
+    doc.save(`Laudo_paiva_ID${idAnalise}.pdf`);
   } catch (error) {
     console.error("Erro ao gerar PDF:", error);
   }
@@ -131,6 +130,10 @@ const exportarPDF = async () => {
       const response = await api.post('/usuarios/analisar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
+      const dadosAnalise = response.data; // O objeto completo vindo do Java
+      setAnaliseSelecionada(dadosAnalise); // Salva o objeto para o PDF usar
+      setResultado(dadosAnalise.analise_IA);
 
       const textoAnalise = response.data.analise_IA || response.data;
       setResultado(textoAnalise);
@@ -162,7 +165,10 @@ const exportarPDF = async () => {
             {historico.length > 0 ? historico.map((item) => (
               <div 
                 key={item.id} 
-                onClick={() => setResultado(item.analise_IA)}
+                onClick={() => {
+                  setAnaliseSelecionada(item);
+                  setResultado(item.analise_IA);
+                }}
                 className="p-3 bg-blue-900/20 border border-blue-800/50 rounded cursor-pointer hover:bg-blue-800 transition"
               >
                 <p className="text-xs font-medium truncate">Análise #{item.id}</p>
@@ -222,7 +228,7 @@ const exportarPDF = async () => {
                     <button onClick={exportarPDF} className="text-[10px] font-bold text-blue-600 hover:underline">Exportar PDF</button>
                 </div>
                 <div className="prose prose-sm max-w-none">
-                    <p className="whitespace-pre-wrap leading-relaxed font-serif text-base">{resultado}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed font-serif text-base text-justify">{resultado}</p>
                 </div>
               </div>
             )}
