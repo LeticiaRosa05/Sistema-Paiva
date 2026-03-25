@@ -29,89 +29,89 @@ function Dashboard() {
       }
   }
 
-const exportarPDF = async () => {
-  if (!resultado) return alert("Não há análise para exportar.");
+  const exportarPDF = async () => {
+    if (!resultado) return alert("Não há análise para exportar.");
 
-  try {
-    const { jsPDF } = await import('jspdf');
-    const doc = new jsPDF();
-    const dataAtual = new Date();
-    const dataEmissao = dataAtual.toLocaleDateString();
-    const horaEmissao = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+      const dataAtual = new Date();
+      const dataEmissao = dataAtual.toLocaleDateString();
+      const horaEmissao = dataAtual.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const margemEsquerda = 20;
-    let y = 20; // Posição vertical inicial
+      const margemEsquerda = 20;
+      let y = 20; // Posição vertical inicial
 
-    // Cabeçalho
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(0, 31, 63);
-    doc.text("SISTEMA PAIVA - RELATÓRIO TÉCNICO PERICIAL", margemEsquerda, y);
-    y += 12;
-
-    const imprimirLinhaInfo = (rotulo, resposta) => {
+      // Cabeçalho
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0); // Preto para o rótulo
-      doc.text(rotulo, margemEsquerda, y);
-      
-      const larguraRotulo = doc.getTextWidth(rotulo);
-      doc.setTextColor(100); // Cinza (cor 100) para a resposta
-      doc.text(resposta, margemEsquerda + larguraRotulo + 2, y);
-      y += 6;
-    }
+      doc.setFontSize(18);
+      doc.setTextColor(0, 31, 63);
+      doc.text("SISTEMA PAIVA - RELATÓRIO TÉCNICO PERICIAL", margemEsquerda, y);
+      y += 12;
 
-    const idAnalise = historico.find(h => h.analise_IA === resultado)?.id || "N/A";
-
-    imprimirLinhaInfo("ID da análise: ", `${idAnalise}`);
-    imprimirLinhaInfo("Perito responsável: ", nomeUsuario);
-    imprimirLinhaInfo("Data de emissão: ", `${dataEmissao}, ${horaEmissao}`);
-
-    y += 2;
-    doc.setTextColor(0, 31, 63);
-    doc.text("-".repeat(145), margemEsquerda, y); // Linha divisória
-    y += 12;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Laudo Técnico Original:", margemEsquerda, y);
-    y += 10;
-
-    doc.setFont("times", "normal");
-    doc.setFontSize(12);
-
-    // Limpeza de caracteres da mensagem da IA
-    const textoLimpo = resultado.replace(/\*\*/g, "").replace(/\* /g, "• ");
-    const linhas = doc.splitTextToSize(textoLimpo, 170);
-
-    linhas.forEach((linha) => {
-      if (y > 275) {
-        doc.addPage();
-        y = 20;
+      const imprimirLinhaInfo = (rotulo, resposta) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0); // Preto para o rótulo
+        doc.text(rotulo, margemEsquerda, y);
+        
+        const larguraRotulo = doc.getTextWidth(rotulo);
+        doc.setTextColor(100); // Cinza (cor 100) para a resposta
+        doc.text(resposta, margemEsquerda + larguraRotulo + 2, y);
+        y += 6;
       }
-      doc.text(linha, margemEsquerda, y);
-      y += 7;
-    });
 
-    // enumerador de páginas
-    const totalPaginas = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPaginas; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "italic");
-      doc.setTextColor(150);
-      doc.text(
-        `Página ${i} de ${totalPaginas} - Documento gerado eletronicamente pelo Sistema Paiva`,
-        105, 290, { align: "center" }
-      );
+      const idAnalise = historico.find(h => h.analise_IA === resultado)?.id || "N/A";
+
+      imprimirLinhaInfo("ID da análise: ", `${idAnalise}`);
+      imprimirLinhaInfo("Perito responsável: ", nomeUsuario);
+      imprimirLinhaInfo("Data de emissão: ", `${dataEmissao}, ${horaEmissao}`);
+
+      y += 2;
+      doc.setTextColor(0, 31, 63);
+      doc.text("-".repeat(145), margemEsquerda, y); // Linha divisória
+      y += 12;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text("Laudo Técnico Original:", margemEsquerda, y);
+      y += 10;
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(12);
+
+      // Limpeza de caracteres da mensagem da IA
+      const textoLimpo = resultado.replace(/\*\*/g, "").replace(/\* /g, "• ");
+      const linhas = doc.splitTextToSize(textoLimpo, 170);
+
+      linhas.forEach((linha) => {
+        if (y > 275) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(linha, margemEsquerda, y, {align: 'justify', maxWidth: 170});
+        y += 7;
+      });
+
+      // enumerador de páginas
+      const totalPaginas = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPaginas; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "italic");
+        doc.setTextColor(150);
+        doc.text(
+          `Página ${i} de ${totalPaginas} - Documento gerado eletronicamente pelo Sistema Paiva`,
+          105, 290, { align: "center" }
+        );
+      }
+
+      doc.save(`Laudo_paiva_ID${idAnalise}.pdf`);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
     }
-
-    doc.save(`Laudo_paiva_ID${idAnalise}.pdf`);
-  } catch (error) {
-    console.error("Erro ao gerar PDF:", error);
-  }
-};
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // retira o token e nome do usuário logado do localstorage ao deslogar
