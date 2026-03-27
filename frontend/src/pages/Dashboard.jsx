@@ -11,6 +11,7 @@ function Dashboard() {
   const [nomeUsuario, setNomeUsuario] = useState("--");
   const [analiseSelecionada, setAnaliseSelecionada] = useState(null);
   const [sidebarAberta, setSidebarAberta] = useState(true);
+  const [modalUsuario, setModalUsuario] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -212,12 +213,12 @@ function Dashboard() {
         </div>
       </aside>
 
-      {/*painel principal*/}
+      {/* painel principal*/}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between px-8 shadow-md">
+        <header className="h-16 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between pl-8 pr-4 shadow-md">
           <h2 className="text-sm font-bold tracking-tight text-zinc-300 uppercase">Ambiente de Perícia</h2>
           <div className="flex items-center gap-3">
-            <div className="text-right">
+            <div onClick={() => setModalUsuario(true)} className="text-right cursor-pointer group gap-2 bg-zinc-900 px-4 py-2 rounded-full hover:bg-blue-900/40 border-blue-400/10 transition-all">
                 <p className="text-xs font-bold text-zinc-200">Perito(a) {nomeUsuario}</p>
                 <p className="text-[10px] text-green-500 flex items-center justify-end gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Sistema Online
@@ -227,7 +228,7 @@ function Dashboard() {
         </header>
 
         <section className="flex-1 p-8 overflow-y-auto bg-zinc-950">
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto">
             
             {/*card/espaço de upload*/}
             <div className="bg-zinc-900 p-8 rounded-xl border border-zinc-800 shadow-2xl">
@@ -249,13 +250,46 @@ function Dashboard() {
             </div>
 
             {resultado && ( // resultado da análise
-              <div className="bg-white text-zinc-900 p-8 rounded-xl shadow-2xl min-h-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="bg-white text-zinc-900 p-8 rounded-xl shadow-2xl min-h-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500 mt-6">
                 <div className="flex justify-between items-center border-b border-zinc-200 pb-4 mb-6">
                     <h3 className="text-zinc-400 text-[10px] uppercase font-black tracking-widest">Relatório Forense Automatizado</h3>
                     <button onClick={exportarPDF} className="text-[10px] font-bold text-blue-600 hover:underline">Exportar PDF</button>
                 </div>
                 <div className="prose prose-sm max-w-none">
                     <p className="whitespace-pre-wrap leading-relaxed font-serif text-base text-justify">{resultado}</p>
+                </div>
+              </div>
+            )}
+
+            {/* modal de exclusão de conta */}
+            {modalUsuario && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm border-none">
+                <div className="bg-[#001f3f] border border-red-500/30 p-8 rounded-2xl shadow-2xl max-w-sm w-full mx-4 animate-in fade-in zoom-in duration-300">
+                  <h2 className="text-xl flex justify-center font-black text-white uppercase tracking-tighter mb-4">
+                    Excluir Conta de Perito
+                  </h2>
+                  <p className="text-zinc-400 text-center text-sm mb-6 leading-relaxed">
+                    Esta ação é irreversível. Todas as suas análises e dados serão apagados permanentemente do Sistema PAIVA.
+                  </p>
+                  
+                  <div className="flex flex-col gap-3">
+                    <button 
+                      onClick={() => {
+                        // Aqui chamaremos a API de exclusão no futuro
+                        console.log("Solicitando exclusão de conta...");
+                        setModalUsuario(false);
+                      }}
+                      className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] rounded-lg transition-colors shadow-lg shadow-red-900/20"
+                    >
+                      Confirmar Exclusão
+                    </button>
+                    <button 
+                      onClick={() => setModalUsuario(false)}
+                      className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-black uppercase text-[10px] rounded-lg transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
