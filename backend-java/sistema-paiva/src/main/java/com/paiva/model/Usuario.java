@@ -31,6 +31,10 @@ public class Usuario implements UserDetails {
 
     private String senha;
 
+    // lista tudo que pertence ao usuário para ser excluído junto com a exclusão do usuário
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Analise> analises;
+
     // Métodos do UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
