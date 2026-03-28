@@ -55,4 +55,24 @@ public class UsuarioController {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return repository.findByUsuario(usuarioLogado);
     }
+
+    @DeleteMapping("/analises/{id}")
+    public ResponseEntity<Void> excluirAnalise(@PathVariable Long id) {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var analise = repository.findById(id);
+
+        // exclui a análise do usuário que solicitou a exclusão
+        if (analise.isPresent() && analise.get().getUsuario().getId().equals(usuarioLogado.getId())) {
+            repository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/minha-conta")
+    public ResponseEntity<Void> excluirMinhaConta() {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        service.excluirUsuario(usuarioLogado.getId()); // usa o método do UsuarioService para apagar os dados do usuário
+        return ResponseEntity.noContent().build();
+    }
 }
