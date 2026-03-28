@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Data;
 
 @Entity
@@ -28,4 +29,8 @@ public class Analise {
     public Analise(Usuario usuario) {
         this.usuario = usuario;
     }
+
+    // vincula a análise às mensagens que foram geradas a partir dela para que sejam excluídas as mensagens junto com a análise
+    @OneToMany(mappedBy = "analise", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mensagem> mensagens;
 }
