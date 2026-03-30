@@ -51,6 +51,13 @@ public class UsuarioController {
         return ResponseEntity.ok(analise);
     }
 
+        @DeleteMapping("/minha-conta")
+        public ResponseEntity<Void> excluirMinhaConta() {
+            var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            service.excluirUsuario(usuarioLogado.getId()); // usa o método do UsuarioService para apagar os dados do usuário
+            return ResponseEntity.noContent().build();
+        }
+
     @GetMapping("/analises")
     public List<Analise> analisesUsuario() {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -71,10 +78,19 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/minha-conta")
-    public ResponseEntity<Void> excluirMinhaConta() {
+    @PatchMapping("/analises/{id}/titulo")
+    public ResponseEntity<Analise> renomearAnalise(@PathVariable Long id, @RequestBody String novoTitulo) {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        service.excluirUsuario(usuarioLogado.getId()); // usa o método do UsuarioService para apagar os dados do usuário
-        return ResponseEntity.noContent().build();
+        var analiseOpt = repository.findById(id);
+
+        if (analiseOpt.isPresent()) {
+            Analise analise = analiseOpt.get();
+            if (analise.getUsuario().getId().equals(usuarioLogado.getId())) {
+                analise.setTitulo(novoTitulo.replace("\"", ""));
+                repository.save(analise);
+                return ResponseEntity.ok(analise);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }
