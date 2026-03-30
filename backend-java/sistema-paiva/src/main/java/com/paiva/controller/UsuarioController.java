@@ -53,7 +53,7 @@ public class UsuarioController {
     @GetMapping("/analises")
     public List<Analise> analisesUsuario() {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return repository.findByUsuario(usuarioLogado);
+        return repository.findByUsuarioId(usuarioLogado.getId());
     }
 
     @DeleteMapping("/analises/{id}")
