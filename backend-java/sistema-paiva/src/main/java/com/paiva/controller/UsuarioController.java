@@ -2,6 +2,7 @@ package com.paiva.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +58,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/analises/{id}")
+    @Transactional // garante a exclusão em cascata da análise - mensagens
     public ResponseEntity<Void> excluirAnalise(@PathVariable Long id) {
         var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var analise = repository.findById(id);
