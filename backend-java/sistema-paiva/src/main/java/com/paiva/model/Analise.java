@@ -1,5 +1,6 @@
 package com.paiva.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class Analise {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
     public Analise(Usuario usuario) {
         this.usuario = usuario;
