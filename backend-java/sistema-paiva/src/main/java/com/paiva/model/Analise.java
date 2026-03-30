@@ -18,6 +18,9 @@ public class Analise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "titulo")
+    private String titulo;
+
     @Column(name = "analise_ia", columnDefinition = "TEXT")
     private String analise_IA;
 
