@@ -12,12 +12,19 @@ function Dashboard() {
   const [analiseSelecionada, setAnaliseSelecionada] = useState(null);
   const [sidebarAberta, setSidebarAberta] = useState(true);
   const [modalUsuario, setModalUsuario] = useState(false);
+  const [menuAbertoId, setMenuAbertoId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const nomeSalvo = localStorage.getItem('nomeUsuario');
     if (nomeSalvo) setNomeUsuario(nomeSalvo);
     carregarHistorico();
+  }, []);
+
+  useEffect(() => {
+    const fecharMenu = () => setMenuAbertoId(null);
+    window.addEventListener('click', fecharMenu);
+    return () => window.removeEventListener('click', fecharMenu);
   }, []);
 
   async function carregarHistorico() {
@@ -116,6 +123,21 @@ function Dashboard() {
     }
   };
 
+  // exclui a análise
+  async function excluirAnalise(id) {
+      try {
+          await api.delete(`/usuarios/analises/${id}`);
+          setHistorico(historico.filter(a => a.id !== id));
+          if (analiseSelecionada?.id === id) {
+              setResultado("");
+              setAnaliseSelecionada(null);
+          }
+      } catch (error) {
+          console.error("Erro ao excluir análise", error);
+          alert("Não foi possível excluir a análise.");
+      }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token'); // retira o token e nome do usuário logado do localstorage ao deslogar
     localStorage.removeItem('nomeUsuario');
@@ -189,12 +211,56 @@ function Dashboard() {
             {historico.map((item) => (
               <div 
                 key={item.id} 
-                onClick={() => { setAnaliseSelecionada(item); setResultado(item.analise_IA); }}
-                className={`p-3 rounded-lg cursor-pointer transition-all flex items-center ${sidebarAberta ? 'justify-start gap-3' : 'justify-center'} 
-                  ${analiseSelecionada?.id === item.id ? 'bg-blue-700' : 'bg-blue-900/20 hover:bg-blue-800'}`}
+                className={`group relative p-3 rounded-lg cursor-pointer transition-all flex items-center ${sidebarAberta ? 'justify-between gap-3' : 'justify-center'} 
+                  ${analiseSelecionada?.id === item.id ? 'bg-blue-700 shadow-inner' : 'bg-blue-900/20 hover:bg-blue-800'}`}
               >
-                <span className="font-black text-[10px] min-w-[20px] text-center">#{item.id}</span>
-                {sidebarAberta && <p className="text-[11px] truncate uppercase font-bold tracking-tighter text-blue-100">Análise Forense</p>}
+                {/* Área de clique para selecionar a análise */}
+                <div 
+                  className="flex items-center gap-3 flex-1 min-w-0" 
+                  onClick={() => { setAnaliseSelecionada(item); setResultado(item.analise_IA); }}
+                >
+                  <span className="font-black text-[10px] w-6 text-center shrink-0">#{item.id}</span>
+                  {sidebarAberta && (
+                    <p className="text-[11px] truncate uppercase font-bold tracking-tight text-blue-100">
+                      Análise Forense
+                    </p>
+                  )}
+                </div>
+
+                {/* Botão de 3 Pontinhos */}
+                {sidebarAberta && (
+                  <div className="relative">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuAbertoId(menuAbertoId === item.id ? null : item.id);
+                      }}
+                      className="text-xl text-blue-600 font-extrabold p-1 hover: rounded text-blue-300 transition-all"
+                    >⋮</button>
+
+                    {/* mini modal dos 3 pontinhos */}
+                    {menuAbertoId === item.id && (
+                      <div className="fixed bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] py-1 w-32 animate-in fade-in zoom-in duration-150">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); console.log("Renomear", item.id); }}
+                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-blue-800 transition-colors"
+                        >
+                          ✏️ Renomear
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if(window.confirm("Excluir análise?")) excluirAnalise(item.id);
+                            setMenuAbertoId(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-red-400 hover:bg-red-900/20 transition-colors"
+                        >
+                          🗑️ Deletar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
