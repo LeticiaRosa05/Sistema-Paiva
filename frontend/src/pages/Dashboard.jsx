@@ -15,6 +15,7 @@ function Dashboard() {
   const [sidebarAberta, setSidebarAberta] = useState(true);
   const [modalUsuario, setModalUsuario] = useState(false);
   const [menuAbertoId, setMenuAbertoId] = useState(null);
+  const [modalConfirmarExclusao, setModalConfirmarExclusao] = useState(null);
   const [modalRenomear, setModalRenomear] = useState(null);
   const [novoTituloTexto, setNovoTituloTexto] = useState("");
   const navigate = useNavigate();
@@ -297,7 +298,7 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
                           onClick={(e) => {
                             e.stopPropagation();
                             setMenuAbertoId(null);
-                            //setModalConfirmarExclusao(item);
+                            setModalConfirmarExclusao(item);
                           }}
                           className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-red-900/60 transition-colors flex items-center"
                         >
@@ -432,6 +433,26 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
                     </button>
                     <button onClick={() => setModalRenomear(null)} className="flex-1 py-2 bg-zinc-800 text-zinc-300 font-black uppercase text-[10px] rounded-lg">
                       Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {modalConfirmarExclusao && (
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <div className="bg-[#001f3f] border border-red-500/30 p-6 rounded-2xl shadow-2xl max-w-xs w-full animate-in zoom-in duration-200 text-center">
+                  <h3 className="text-white font-black uppercase text-sm mb-2">Excluir Análise?</h3>
+                  <p className="text-zinc-400 text-xs mb-6">Deseja realmente apagar a análise #{modalConfirmarExclusao.id}?</p>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => { excluirAnalise(modalConfirmarExclusao.id); setModalConfirmarExclusao(null); }}
+                      className="flex-1 py-2 bg-red-600 text-white font-black uppercase text-[10px] rounded-lg"
+                    >
+                      Confirmar
+                    </button>
+                    <button onClick={() => setModalConfirmarExclusao(null)} className="flex-1 py-2 bg-zinc-800 text-zinc-300 font-black uppercase text-[10px] rounded-lg">
+                      Voltar
                     </button>
                   </div>
                 </div>
