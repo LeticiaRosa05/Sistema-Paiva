@@ -15,6 +15,8 @@ function Dashboard() {
   const [sidebarAberta, setSidebarAberta] = useState(true);
   const [modalUsuario, setModalUsuario] = useState(false);
   const [menuAbertoId, setMenuAbertoId] = useState(null);
+  const [modalRenomear, setModalRenomear] = useState(null);
+  const [novoTituloTexto, setNovoTituloTexto] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -140,23 +142,27 @@ function Dashboard() {
       }
   }
 
-  async function renomearAnalise(id) {
-    const novoTitulo = prompt("Digite o novo nome para esta análise:");
-    if (!novoTitulo || novoTitulo.trim() === "") return;
+  async function renomearAnalise() {
+    const id = modalRenomear.id;
+
+    if (!novoTituloTexto || novoTituloTexto.trim() === "") {
+      return;
+    }
 
     try {
-        // passa o id da analise e o novo título para o Java
-        await api.patch(`/usuarios/analises/${id}/titulo`, novoTitulo, {
-            headers: { "Content-Type": "text/plain" } 
-        });
+      await api.patch(`/usuarios/analises/{id}/titulo`, novoTituloTexto, {
+        headers: {"Content-Type": "text/plain"}
+      });
 
-        // atualiza o histórico no react
-        setHistorico(historico.map(analise => 
-            analise.id === id ? { ...analise, titulo: novoTitulo } : analise
-        ));
+      // atualiza a sidebar na aplicação/localmente
+      setHistorico(historico.map(analise => analise.id === id ? {...analise, titulo: novoTituloTexto} : analise
+      ));
+
+      // limpa as variáveis e fecha o modal de renomear
+      setModalRenomear(null);
+      setNovoTituloTexto("");
     } catch (error) {
-        console.error("Erro ao renomear análise", error);
-        alert("Não foi possível renomear a análise.");
+      console.error("Erro ao renomear análise ", error)
     }
   }
 
@@ -196,7 +202,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-black text-white font-sans">
+    <div className="z-[50] flex h-screen bg-black text-white font-sans">
       {/* sidebar */}
       <aside className={`relative bg-[#001f3f] flex flex-col shadow-xl transition-all duration-300 ease-in-out ${sidebarAberta ? 'w-64' : 'w-20'}`}>
         
@@ -231,10 +237,9 @@ function Dashboard() {
         <nav className="flex-1 p-4 overflow-y-auto custom-scrollbar">
           <div className="space-y-2">
             {historico.map((item) => (
-              <div 
-                key={item.id} 
-                className={`group relative p-3 rounded-lg cursor-pointer transition-all flex items-center ${sidebarAberta ? 'justify-between gap-3' : 'justify-center'} 
-                  ${analiseSelecionada?.id === item.id ? 'bg-blue-700 shadow-inner' : 'bg-blue-900/20 hover:bg-blue-800'}`}
+              <div
+                key={item.id}
+                className={`group relative p-3 rounded-lg cursor-pointer transition-all flex items-center ${sidebarAberta ? 'justify-between gap-3' : 'justify-center'} ${analiseSelecionada?.id === item.id ? 'bg-blue-700 shadow-inner' : 'bg-blue-900/20 hover:bg-blue-800'}`}
               >
                 {/* Área de clique para selecionar a análise */}
                 <div 
@@ -262,12 +267,12 @@ function Dashboard() {
 
                     {/* mini modal dos 3 pontinhos */}
                     {menuAbertoId === item.id && (
-                      <div className="fixed z-[1] bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] py-1 w-32 animate-in fade-in zoom-in duration-150">
+                      <div className="absolute left-full top-0 ml-2 w-32 bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] z-[9999] py-1 animate-in fade-in zoom-in duration-150" style={{ position: 'absolute' }}>
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            renomearAnalise(item.id);
                             setMenuAbertoId(null);
+                            setModalRenomear(item);
                           }}
                           className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-blue-800 transition-colors flex items-center"
                         >
@@ -305,8 +310,8 @@ function Dashboard() {
         </div>
       </aside>
 
-      {/* painel principal*/}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      {/* painel principal */}
+      <main className="z-[0] flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between pl-8 pr-4 shadow-md">
           <h2 className="text-sm font-bold tracking-tight text-zinc-300 uppercase">Ambiente de Perícia</h2>
           <div className="flex items-center gap-3">
@@ -379,6 +384,38 @@ function Dashboard() {
                       onClick={() => setModalUsuario(false)}
                       className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-black uppercase text-[10px] rounded-lg transition-colors"
                     >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {modalRenomear && (
+              <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <div className="bg-[#001f3f] border border-blue-500/30 p-6 rounded-2xl shadow-2xl max-w-xs w-full animate-in zoom-in duration-200">
+                  <h3 className="text-white font-black uppercase text-sm mb-4">Renomear Análise</h3>
+                  
+                  <input 
+                    type="text"
+                    className="w-full bg-blue-900/20 border border-blue-500/30 rounded-lg p-2 text-white text-xs mb-6 focus:outline-none focus:border-blue-400"
+                    placeholder="Digite o novo título..."
+                    value={novoTituloTexto}
+                    onChange={(e) => setNovoTituloTexto(e.target.value)}
+                  />
+
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        renomearAnalise(modalRenomear.id, novoTituloTexto);
+                        setModalRenomear(null);
+                        setNovoTituloTexto("");
+                      }}
+                      className="flex-1 py-2 bg-blue-600 text-white font-black uppercase text-[10px] rounded-lg"
+                    >
+                      Salvar
+                    </button>
+                    <button onClick={() => setModalRenomear(null)} className="flex-1 py-2 bg-zinc-800 text-zinc-300 font-black uppercase text-[10px] rounded-lg">
                       Cancelar
                     </button>
                   </div>
