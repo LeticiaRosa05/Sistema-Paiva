@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import iconSaida from '../assets/icon-saida.png';
+import iconPencil from '../assets/icon-lapis.png';
+import iconDeletar from '../assets/icon-deletar.png';
 
 function Dashboard() {
   const [arquivo, setArquivo] = useState(null);
@@ -138,6 +140,26 @@ function Dashboard() {
       }
   }
 
+  async function renomearAnalise(id) {
+    const novoTitulo = prompt("Digite o novo nome para esta análise:");
+    if (!novoTitulo || novoTitulo.trim() === "") return;
+
+    try {
+        // passa o id da analise e o novo título para o Java
+        await api.patch(`/usuarios/analises/${id}/titulo`, novoTitulo, {
+            headers: { "Content-Type": "text/plain" } 
+        });
+
+        // atualiza o histórico no react
+        setHistorico(historico.map(analise => 
+            analise.id === id ? { ...analise, titulo: novoTitulo } : analise
+        ));
+    } catch (error) {
+        console.error("Erro ao renomear análise", error);
+        alert("Não foi possível renomear a análise.");
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token'); // retira o token e nome do usuário logado do localstorage ao deslogar
     localStorage.removeItem('nomeUsuario');
@@ -222,7 +244,7 @@ function Dashboard() {
                   <span className="font-black text-[10px] w-6 text-center shrink-0">#{item.id}</span>
                   {sidebarAberta && (
                     <p className="text-[11px] truncate uppercase font-bold tracking-tight text-blue-100">
-                      Análise Forense
+                      {item.titulo || "Análise Forense"} {/*mostra o nome que o usuário renomeou ou o padrão*/}
                     </p>
                   )}
                 </div>
@@ -240,12 +262,16 @@ function Dashboard() {
 
                     {/* mini modal dos 3 pontinhos */}
                     {menuAbertoId === item.id && (
-                      <div className="fixed bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] py-1 w-32 animate-in fade-in zoom-in duration-150">
+                      <div className="fixed z-[1] bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] py-1 w-32 animate-in fade-in zoom-in duration-150">
                         <button 
-                          onClick={(e) => { e.stopPropagation(); console.log("Renomear", item.id); }}
-                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-blue-800 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            renomearAnalise(item.id);
+                            setMenuAbertoId(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-blue-800 transition-colors flex items-center"
                         >
-                          ✏️ Renomear
+                          <img src={iconPencil} className="w-4 h-4 mr-1" alt="Renomear" /> Renomear
                         </button>
                         <button 
                           onClick={(e) => {
@@ -253,9 +279,9 @@ function Dashboard() {
                             if(window.confirm("Excluir análise?")) excluirAnalise(item.id);
                             setMenuAbertoId(null);
                           }}
-                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-red-400 hover:bg-red-900/20 transition-colors"
+                          className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-red-900/60 transition-colors flex items-center"
                         >
-                          🗑️ Deletar
+                          <img src={iconDeletar} className="w-4 h-4 mr-1" alt="Deletar" /> Deletar
                         </button>
                       </div>
                     )}
