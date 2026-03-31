@@ -153,7 +153,6 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
       }
   }
 
-  // RENOMEAR ANALISE TA AQUI
   async function renomearAnalise() {
     const id = modalRenomear.id;
 
@@ -162,7 +161,7 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
     }
 
     try {
-      await api.patch(`/usuarios/analises/{id}/titulo`, novoTituloTexto, {
+      await api.patch(`/usuarios/analises/${id}/titulo`, novoTituloTexto, {
         headers: {"Content-Type": "text/plain"}
       });
 
