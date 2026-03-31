@@ -31,6 +31,17 @@ function Dashboard() {
     return () => window.removeEventListener('click', fecharMenu);
   }, []);
 
+useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini modal das análises
+  const sidebarNav = document.querySelector('nav.flex-1');
+  if (sidebarNav) {
+    if (menuAbertoId !== null) {
+      sidebarNav.style.overflowY = 'hidden';
+    } else {
+      sidebarNav.style.overflowY = 'auto';
+    }
+  }
+}, [menuAbertoId]);
+
   async function carregarHistorico() {
       try {
           const response = await api.get('/usuarios/analises');
@@ -142,6 +153,7 @@ function Dashboard() {
       }
   }
 
+  // RENOMEAR ANALISE TA AQUI
   async function renomearAnalise() {
     const id = modalRenomear.id;
 
@@ -257,7 +269,8 @@ function Dashboard() {
                 {/* Botão de 3 Pontinhos */}
                 {sidebarAberta && (
                   <div className="relative">
-                    <button 
+                    <button
+                      id={`btn-menu-${item.id}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setMenuAbertoId(menuAbertoId === item.id ? null : item.id);
@@ -267,7 +280,10 @@ function Dashboard() {
 
                     {/* mini modal dos 3 pontinhos */}
                     {menuAbertoId === item.id && (
-                      <div className="absolute left-full top-0 ml-2 w-32 bg-[#00152b] border border-blue-500/30 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.7)] z-[9999] py-1 animate-in fade-in zoom-in duration-150" style={{ position: 'absolute' }}>
+                      <div className="fixed bg-[#00152b] border border-blue-500/30 rounded-lg shadow-2xl z-[9999] py-1 w-32 animate-in fade-in zoom-in duration-150" style={{
+                        top: document.getElementById(`btn-menu-${item.id}`)?.getBoundingClientRect().top + "px",
+                        left: (document.getElementById(`btn-menu-${item.id}`)?.getBoundingClientRect().right + 10) + "px"
+                        }}>
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -281,8 +297,8 @@ function Dashboard() {
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            if(window.confirm("Excluir análise?")) excluirAnalise(item.id);
                             setMenuAbertoId(null);
+                            //setModalConfirmarExclusao(item);
                           }}
                           className="w-full text-left px-4 py-2 text-[10px] font-black uppercase text-blue-100 hover:bg-red-900/60 transition-colors flex items-center"
                         >
