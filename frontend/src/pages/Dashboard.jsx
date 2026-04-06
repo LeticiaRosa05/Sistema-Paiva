@@ -154,6 +154,18 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
       }
   }
 
+  // exclui a conta + analises/chats
+  async function excluirConta() {
+      try {
+          await api.delete('/usuarios/minha-conta');
+          localStorage.clear();
+          navigate('/login');
+      } catch (error) {
+          console.error("Erro ao excluir conta", error);
+          alert("Erro ao processar exclusão.");
+      }
+  }
+
   async function renomearAnalise() {
     const id = modalRenomear.id;
 
@@ -388,8 +400,7 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
                   <div className="flex flex-col gap-3">
                     <button 
                       onClick={() => {
-                        // Aqui chamaremos a API de exclusão no futuro
-                        console.log("Solicitando exclusão de conta...");
+                        excluirConta();
                         setModalUsuario(false);
                       }}
                       className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] rounded-lg transition-colors shadow-lg shadow-red-900/20"
