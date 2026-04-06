@@ -51,12 +51,13 @@ public class UsuarioController {
         return ResponseEntity.ok(analise);
     }
 
-        @DeleteMapping("/minha-conta")
-        public ResponseEntity<Void> excluirMinhaConta() {
-            var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            service.excluirUsuario(usuarioLogado.getId()); // usa o método do UsuarioService para apagar os dados do usuário
-            return ResponseEntity.noContent().build();
-        }
+    @Transactional
+    @DeleteMapping("/minha-conta")
+    public ResponseEntity<Void> excluirMinhaConta() {
+        var usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        service.excluirUsuario(usuarioLogado.getId()); // usa o método do UsuarioService para apagar os dados do usuário
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("/analises")
     public List<Analise> analisesUsuario() {
