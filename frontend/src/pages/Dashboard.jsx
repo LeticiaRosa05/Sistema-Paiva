@@ -272,7 +272,6 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
           </div>
         </header>
 
-
         <section className="flex-1 p-8 overflow-y-auto bg-zinc-950">
           <div className="max-w-4xl mx-auto">
 
@@ -282,26 +281,10 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
               resultado={resultado} 
               carregando={carregando}
               exportarPDF={exportarPDF}
+              handleUpload={handleUpload}
+              setArquivo={setArquivo}
             />
 
-            {/*card/espaço de upload*/}
-            <div className="bg-zinc-900 p-8 rounded-xl border border-zinc-800 shadow-2xl">
-              <h3 className="text-paiva-laranja text-xs font-black uppercase mb-4 tracking-widest">Entrada de Dados</h3>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <input 
-                  type="file" 
-                  className="block w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-paiva-laranja file:text-white hover:file:bg-orange-600 cursor-pointer"
-                  onChange={(e) => setArquivo(e.target.files[0])}
-                />
-                <button 
-                  onClick={handleUpload}
-                  disabled={carregando}
-                  className="w-full sm:w-auto px-8 py-2 bg-blue-700 text-[10px] font-black uppercase rounded-full hover:bg-blue-600 transition disabled:opacity-50 shadow-lg shadow-blue-900/20"
-                >
-                  {carregando ? "IA Processando..." : "Iniciar Análise"}
-                </button>
-              </div>
-            </div>
           </div>
         </section>
       </main>
