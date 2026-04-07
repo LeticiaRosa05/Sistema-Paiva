@@ -1,24 +1,24 @@
-import AnalysisArea from '../components/AnalysisArea';
-import Sidebar from '../components/Sidebar';
-import Modals from '../components/Modals';
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
+import ChatArea from '../components/ChatArea';
+import Sidebar from '../components/Sidebar';
+import Modals from '../components/Modals';
+
 function Dashboard() {
-  const [arquivo, setArquivo] = useState(null);
+  const [modalConfirmarExclusao, setModalConfirmarExclusao] = useState(null);
+  const [analiseSelecionada, setAnaliseSelecionada] = useState(null);
+  const [novoTituloTexto, setNovoTituloTexto] = useState("");
+  const [sidebarAberta, setSidebarAberta] = useState(true);
+  const [modalRenomear, setModalRenomear] = useState(null);
+  const [modalUsuario, setModalUsuario] = useState(false);
+  const [menuAbertoId, setMenuAbertoId] = useState(null);
+  const [nomeUsuario, setNomeUsuario] = useState("--");
   const [carregando, setCarregando] = useState(false);
   const [resultado, setResultado] = useState("");
   const [historico, setHistorico] = useState([]);
-  const [nomeUsuario, setNomeUsuario] = useState("--");
-  const [analiseSelecionada, setAnaliseSelecionada] = useState(null);
-  const [sidebarAberta, setSidebarAberta] = useState(true);
-  const [modalUsuario, setModalUsuario] = useState(false);
-  const [menuAbertoId, setMenuAbertoId] = useState(null);
-  const [modalConfirmarExclusao, setModalConfirmarExclusao] = useState(null);
-  const [modalRenomear, setModalRenomear] = useState(null);
-  const [novoTituloTexto, setNovoTituloTexto] = useState("");
+  const [arquivo, setArquivo] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -244,6 +244,20 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
         setModalConfirmarExclusao={setModalConfirmarExclusao}
       />
 
+      <Modals
+        modalUsuario={modalUsuario}
+        setModalUsuario={setModalUsuario}
+        modalConfirmarExclusao={modalConfirmarExclusao}
+        setModalConfirmarExclusao={setModalConfirmarExclusao}
+        modalRenomear={modalRenomear}
+        setModalRenomear={setModalRenomear}
+        renomearAnalise={renomearAnalise}
+        novoTituloTexto={novoTituloTexto}
+        setNovoTituloTexto={setNovoTituloTexto}
+        excluirAnalise={excluirAnalise}
+        excluirConta={excluirConta}
+      />
+
       {/* painel principal */}
       <main className="z-[0] flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between pl-8 pr-4 shadow-md">
@@ -258,17 +272,18 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
           </div>
         </header>
 
-        {/* Área Central de Resultados */}
-        <AnalysisArea 
-          analiseSelecionada={analiseSelecionada} 
-          resultado={resultado} 
-          carregando={carregando}
-          exportarPDF={exportarPDF}
-        />
 
         <section className="flex-1 p-8 overflow-y-auto bg-zinc-950">
           <div className="max-w-4xl mx-auto">
-            
+
+            {/* Área Central de Resultados */}
+            <ChatArea
+              analiseSelecionada={analiseSelecionada} 
+              resultado={resultado} 
+              carregando={carregando}
+              exportarPDF={exportarPDF}
+            />
+
             {/*card/espaço de upload*/}
             <div className="bg-zinc-900 p-8 rounded-xl border border-zinc-800 shadow-2xl">
               <h3 className="text-paiva-laranja text-xs font-black uppercase mb-4 tracking-widest">Entrada de Dados</h3>
@@ -287,21 +302,6 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
                 </button>
               </div>
             </div>
-
-          <Modals
-            modalUsuario={modalUsuario}
-            setModalUsuario={setModalUsuario}
-            modalConfirmarExclusao={modalConfirmarExclusao}
-            setModalConfirmarExclusao={setModalConfirmarExclusao}
-            modalRenomear={modalRenomear}
-            setModalRenomear={setModalRenomear}
-            renomearAnalise={renomearAnalise}
-            novoTituloTexto={novoTituloTexto}
-            setNovoTituloTexto={setNovoTituloTexto}
-            excluirAnalise={excluirAnalise}
-            excluirConta={excluirConta}
-          />
-
           </div>
         </section>
       </main>
