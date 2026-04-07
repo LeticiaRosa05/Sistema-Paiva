@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AnalysisArea = ({
+const ChatArea = ({
   analiseSelecionada,
   resultado,
   carregando,
@@ -43,4 +43,4 @@ const AnalysisArea = ({
   );
 };
 
-export default AnalysisArea;
+export default ChatArea;
