@@ -1,3 +1,4 @@
+import AnalysisArea from '../components/AnalysisArea';
 import Sidebar from '../components/Sidebar';
 import Modals from '../components/Modals';
 
@@ -257,6 +258,14 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
           </div>
         </header>
 
+        {/* Área Central de Resultados */}
+        <AnalysisArea 
+          analiseSelecionada={analiseSelecionada} 
+          resultado={resultado} 
+          carregando={carregando}
+          exportarPDF={exportarPDF}
+        />
+
         <section className="flex-1 p-8 overflow-y-auto bg-zinc-950">
           <div className="max-w-4xl mx-auto">
             
@@ -278,18 +287,6 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
                 </button>
               </div>
             </div>
-
-            {resultado && ( // resultado da análise
-              <div className="bg-white text-zinc-900 p-8 rounded-xl shadow-2xl min-h-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500 mt-6">
-                <div className="flex justify-between items-center border-b border-zinc-200 pb-4 mb-6">
-                    <h3 className="text-zinc-400 text-[10px] uppercase font-black tracking-widest">Relatório Forense Automatizado</h3>
-                    <button onClick={exportarPDF} className="text-[10px] font-bold text-blue-600 hover:underline">Exportar PDF</button>
-                </div>
-                <div className="prose prose-sm max-w-none">
-                    <p className="whitespace-pre-wrap leading-relaxed font-serif text-base text-justify">{resultado}</p>
-                </div>
-              </div>
-            )}
 
           <Modals
             modalUsuario={modalUsuario}
