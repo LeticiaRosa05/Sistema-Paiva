@@ -97,3 +97,5 @@ const Modals = ({
         </div>
     )}
 }
+
+export default Modals;
