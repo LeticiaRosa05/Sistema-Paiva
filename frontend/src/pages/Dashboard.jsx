@@ -272,21 +272,17 @@ useEffect(() => { // tira o scroll da sidebar ao abrir o menu de contexto/mini m
           </div>
         </header>
 
-        <section className="flex-1 p-8 overflow-y-auto bg-zinc-950">
-          <div className="max-w-4xl mx-auto">
-
-            {/* Área Central de Resultados */}
-            <ChatArea
-              analiseSelecionada={analiseSelecionada} 
-              resultado={resultado} 
-              carregando={carregando}
-              exportarPDF={exportarPDF}
-              handleUpload={handleUpload}
-              setArquivo={setArquivo}
-            />
-
-          </div>
-        </section>
+        <div className="flex-1 p-8 pt-6 max-w-4xl mx-auto overflow-auto">
+          {/* Área Central de Resultados */}
+          <ChatArea
+            analiseSelecionada={analiseSelecionada} 
+            resultado={resultado} 
+            carregando={carregando}
+            exportarPDF={exportarPDF}
+            handleUpload={handleUpload}
+            setArquivo={setArquivo}
+          />
+        </div>
       </main>
     </div>
   );
