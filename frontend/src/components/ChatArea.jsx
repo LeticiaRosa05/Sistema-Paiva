@@ -44,7 +44,7 @@ const ChatArea = ({
     </div>
 
     {/* card de upload/chat */}
-    <div className="bg-zinc-900 items-center mt-6 p-6 max-w-[150rem] h-[6rem] w-full sticky bottom-0 rounded-xl border border-zinc-800 shadow-2xl">
+    <div className="bg-zinc-900 items-center mt-6 p-6 max-w-[150rem] h-[6rem] w-full sticky bottom-0 rounded-3xl border border-zinc-800 shadow-2xl">
       {/* Aqui colocaremos o input de texto e o clipe de papel para anexo */}
       <div className='flex items-center justify-between pt-2'>
           {/* Futuro campo de chat */}
